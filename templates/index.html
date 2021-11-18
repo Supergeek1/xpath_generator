@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Xpath Generator</title>
+    <style>
+        .title {
+            text-align: center;
+        }
+
+        .form-control {
+            text-align: left;
+            width: 50% !important;
+            resize: none;
+        }
+
+        .panel {
+            padding-left: 33%;
+        }
+
+        textarea::-webkit-input-placeholder {
+            text-align: center;
+            font-size: 18px;
+        }
+    </style>
+{#    <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>#}
+{#    <link href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js" rel="stylesheet">#}
+{#    <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" rel="stylesheet">#}
+    <script src="{{ url_for('static', path='/js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', path='/js/bootstrap.min.js') }}"></script>
+    <link rel="icon" href="{{ url_for('static', path='/imgs/favicon.ico') }}">
+    <link href="{{ url_for('static', path='/css/bootstrap.min.css') }}" rel="stylesheet">
+</head>
+<body>
+<h1 class="title">Xpath Generator</h1>
+<br>
+<div class="panel">
+    <label for="html"></label><textarea class="form-control" name="html" id="html" cols="30" rows="10"
+                                        placeholder="在此放入html" style="height: auto !important;"></textarea>
+    <label for="strings"></label><textarea class="form-control" name="strings" id="strings" cols="30" rows="10"
+                                           placeholder="在此输入要查询的字符" style="height: 100px !important;"></textarea>
+    <br>
+</div>
+<div style="padding-left: 47%">
+    <button id='submit' type="submit" value="添加" class="btn btn-success">生成Xpath
+    </button>
+</div>
+<br>
+<table id="table" class="table table-bordered" style="display:none;">
+    <thead>
+    <th align="right"></th>
+    <th>shortest_xpath</th>
+    <th>longest_xpath</th>
+    </thead>
+    <tbody id="tbody">
+
+    </tbody>
+</table>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+<script>
+    $("#submit").click(function getData() {
+        html = $("#html").val()
+        strings = $("#strings").val()
+        if (!html) {
+            alert('请输入html')
+        }
+        if (!strings) {
+            alert('请输入strings')
+        }
+        if (html && strings) {
+            $.ajax({
+                type: "post",
+                {#dataType: "json",#}
+                headers: {"Content-Type": "application/json"},
+                async: true,
+                url: "/xpath",
+                data: JSON.stringify({
+                    "html": html,
+                    "strings": strings
+                }),
+                success: function (data) {
+                    {#data = JSON.parse(data)#}
+                    console.log(data)
+                    if (data['code'] === 0) {
+                        alert('服务器错误')
+                    } else if (data['code' === 1]) {
+                        alert('没有找到匹配的xpath')
+                    } else {
+                        let table = document.getElementById('table').style.display = "";
+                        $("#tbody").empty();
+                        data = data.data;
+                        for (const [index, elem] of data.entries()) {
+                            $("#tbody").append("<tr>" + "<td>" + index + "</td>" + "<td>" + elem.shortest_xpath + "</td>" + "<td>" + elem.longest_xpath + "</td>" + "</tr>")
+                        }
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    console.log(XMLHttpRequest)
+                    console.log(textStatus)
+                    console.log(errorThrown)
+                    alert('返回数据失败')
+                }
+            })
+        }
+    })
+</script>
+</body>
+</html>
