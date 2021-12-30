@@ -84,6 +84,11 @@ class Xpath:
         return result
 
     def filter_tag(self, tags) -> list:
+        """
+        过滤出最小标签
+        :param tags:过滤之前的 tags
+        :return:过滤后的 tags
+        """
         tags = list(reversed(tags))
         filter_tags = []
         temp = []
@@ -127,7 +132,7 @@ class Test:
 
 
 if __name__ == '__main__':
-    with open('htmls/wangyi.html', 'r', encoding='utf-8') as f:
+    with open('test/htmls/wangyi.html', 'r', encoding='utf-8') as f:
         html = f.read()
     strings = r'''联播+｜'''
     # strings = '联播+｜推动我国数字经济健康发展 习近平作出最新部署'
